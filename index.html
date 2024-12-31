@@ -1,5 +1,135 @@
-<html>
-  <body>
-    Hi There
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            font-family: sans-serif;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+        }
+        input,
+        textarea {
+            padding: 10px 16px;
+            border: 1px solid #5559;
+            border-radius: 4px;
+            min-width: 300px;
+        }
+        button{
+            background: royalblue;
+            padding: 10px 15px;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+        button:hover{
+            filter: brightness(.9);
+        }
+        .row{
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        textarea{
+            resize: none;
+            min-height: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row">
+        <div>
+            <label for="encrypt-string">Encrypted String</label>
+            <input type="text" name="encrypt-string" id="encrypt-string" placeholder="Encrypted String">
+        </div>
+        <div>
+            <label for="key">Key</label>
+            <input type="search" name="" id="key" value="A1b2C3d4E5f6G7h8I9j0K1l2M3n4O512">
+        </div>
+        <div>
+            <button type="button" onclick="clearFields()">Clear</button>
+            <button type="button" onclick="encrypt()">Decrypt Data</button>
+        </div>
+        <div>
+            <label for="decrypt-data">Decrypted String</label>
+            <textarea name="decrypt-data" id="decrypt-data" placeholder="Decrypted String"></textarea>
+
+
+            <p onclick="copyData()" style="cursor: pointer;"><u>Copy Decrypted Data</u></p>
+        </div>
+    </div>
+
+    <script>
+        const clearFields = () =>{
+            document.getElementById("encrypt-string").value = "";
+            document.getElementById("decrypt-data").value = "";            
+        }
+        const copyData = () =>{
+            document.getElementById("decrypt-data").select();
+            document.execCommand('copy');
+            alert("Decrypted Data Copied.!")
+        }
+        const encrypt = async () => {
+            const val = document.getElementById("encrypt-string").value;
+            const key = document.getElementById("key").value;
+            await decryptData(val, key).then((val) => {
+                document.getElementById("decrypt-data").value = val;
+                console.log("decryptData val", val)
+            }).catch((err) => {
+                console.log("decryptData error", err)
+            })
+        }
+        function encryptData(plaintext, key) {
+            const iv = window.crypto.getRandomValues(new Uint8Array(16)); // Generate a random IV
+            const keyBytes = new TextEncoder().encode(key);
+            const plaintextBytes = new TextEncoder().encode(plaintext);
+
+            return window.crypto.subtle
+                .importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["encrypt"])
+                .then((cryptoKey) =>
+                    window.crypto.subtle.encrypt({ name: "AES-CBC", iv }, cryptoKey, plaintextBytes)
+                )
+                .then((encryptedBuffer) => {
+                    const encryptedBytes = new Uint8Array(encryptedBuffer);
+                    const combined = new Uint8Array(iv.length + encryptedBytes.length);
+                    combined.set(iv);
+                    combined.set(encryptedBytes, iv.length);
+                    return btoa(String.fromCharCode(...combined)); // Return Base64-encoded ciphertext
+                })
+                .catch((err) => {
+                    console.error("Encryption failed:", err);
+                    throw err;
+                });
+        }
+
+        function decryptData(ciphertext, key) {
+            const data = Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0));
+            const iv = data.slice(0, 16);
+            const encryptedBytes = data.slice(16);
+            const keyBytes = new TextEncoder().encode(key);
+
+            return window.crypto.subtle
+                .importKey("raw", keyBytes, { name: "AES-CBC" }, false, ["decrypt"])
+                .then((cryptoKey) =>
+                    window.crypto.subtle.decrypt({ name: "AES-CBC", iv }, cryptoKey, encryptedBytes)
+                )
+                .then((buffer) => new TextDecoder().decode(buffer))
+                .catch((err) => {
+                    console.error("Decryption failed:", err);
+                    throw err;
+                });
+        }
+    </script>
+</body>
+
 </html>
