@@ -86,9 +86,10 @@
             const key = document.getElementById("key").value;
             await decryptData(val, key).then((val) => {
                 document.getElementById("decrypt-data").value = val;
-                console.log("decryptData val", val)
-                console.log(val)
-                console.log(JSON.parse(`{val:${val}}`))
+                console.log("decryptData val", val);
+                if(val.includes("{")){
+                    console.log(JSON.parse(val));
+                }
             }).catch((err) => {
                 console.log("decryptData error", err)
             })
