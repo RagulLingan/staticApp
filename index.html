@@ -18,7 +18,7 @@
             padding: 10px 16px;
             border: 1px solid #5559;
             border-radius: 4px;
-            min-width: 300px;
+/*             min-width: 300px; */
         }
         button{
             background: royalblue;
@@ -31,7 +31,7 @@
         button:hover{
             filter: brightness(.9);
         }
-        .row{
+/*         .row{
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -42,7 +42,7 @@
         textarea{
             resize: none;
             min-height: 200px;
-        }
+        } */
     </style>
 </head>
 
@@ -85,6 +85,8 @@
             await decryptData(val, key).then((val) => {
                 document.getElementById("decrypt-data").value = val;
                 console.log("decryptData val", val)
+                console.log(val)
+                console.log(JSON.parse(`{val:${val}}`))
             }).catch((err) => {
                 console.log("decryptData error", err)
             })
