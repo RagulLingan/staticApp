@@ -154,7 +154,8 @@
                     const combined = new Uint8Array(iv.length + encryptedBytes.length);
                     combined.set(iv);
                     combined.set(encryptedBytes, iv.length);
-                    return btoa(String.fromCharCode(...combined)); // Return Base64-encoded ciphertext
+                    return arrayBufferToBase64(combined); // Efficiently convert to Base64
+                      // return btoa(String.fromCharCode(...combined)); // Return Base64-encoded ciphertext
                 })
                 .catch((err) => {
                     console.error("Encryption failed:", err);
@@ -162,7 +163,16 @@
                     throw err;
                 });
         }
-
+        
+        // Helper function to convert Uint8Array to Base64
+        function arrayBufferToBase64(buffer: ArrayBuffer): string {
+          let binary = '';
+          const bytes = new Uint8Array(buffer);
+          for (let i = 0; i < bytes.length; i++) {
+              binary += String.fromCharCode(bytes[i]);
+          }
+          return btoa(binary);
+        }
         function decryptData(ciphertext, key) {
             const data = Uint8Array.from(atob(ciphertext), (c) => c.charCodeAt(0));
             const iv = data.slice(0, 16);
