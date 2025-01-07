@@ -165,7 +165,7 @@
         }
         
         // Helper function to convert Uint8Array to Base64
-        function arrayBufferToBase64(buffer: ArrayBuffer): string {
+        function arrayBufferToBase64(buffer){
           let binary = '';
           const bytes = new Uint8Array(buffer);
           for (let i = 0; i < bytes.length; i++) {
