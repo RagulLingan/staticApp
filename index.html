@@ -133,6 +133,7 @@
                 document.getElementById("decrypt-data").value = val;
                 console.log("decryptData val", val);
                 if(val.includes("{")){
+                    document.getElementById("decrypt-data").value = JSON.stringify(val, null, 4);
                     console.log(JSON.parse(val));
                 }
             }).catch((err) => {
