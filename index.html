@@ -132,6 +132,7 @@
             await decryptData(val, key).then((val) => {
                 const textarea = document.getElementById('decrypt-data');
                 if(val.includes("{")){
+                    val = JSON.parse(val);
                     const beautifiedJson = JSON.stringify(val, null, 2);
                         textarea.value = beautifiedJson;
                         console.log(JSON.parse(val));
